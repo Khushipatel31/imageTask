@@ -12,6 +12,8 @@ const cookieParser=require("cookie-parser");
 app.use(cookieParser())
 app.use(cors());
 
+const user=require("./routes/userRoutes")
+app.use("/api/v1",user);
 //Middleware for error
 app.use(errorHandler);
 module.exports=app; 
