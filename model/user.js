@@ -23,6 +23,27 @@ const userSchema = new mongoose.Schema({
     // required: [true, "Please provide a Password"],
     // minLength: [8, "Password must be greater than 8 characters"],
   },
+  images: [
+    //will use cloudmary jema public id and url madse
+    {
+      public_id: {
+        type: String,
+        require: true,
+      },
+      url: {
+        type: String,
+        require: true,
+      },
+      title:{
+        type:String,
+        require:true,
+      },
+      description:{
+        type:String,
+        require:true
+      }
+    },
+  ],
   createdAt:{
     type:Date,
     default:Date.now()
@@ -31,6 +52,9 @@ const userSchema = new mongoose.Schema({
 
 // //have apre this use karvu padse because model is our reference but we can not use this in call back function so will use async function
 userSchema.pre("save",async function(next){
+    if(!this.isModified("password")){
+        next();
+    }
     this.password=await bcrypt.hash(this.password,10);//10 characters password
 })
 

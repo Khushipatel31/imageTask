@@ -29,3 +29,38 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
     }
     sendToken(user, 200, res);
 });
+
+exports.addImage = catchAsyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+    const { title, description } = req.body;
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.image, {
+        folder: "imageManagement",
+        width: 150,
+        crop: "scale",
+    });
+    if (!user) {
+        return next(new CustomHttpError(404, "No user exists"));
+    }
+    user.images.push({
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+        title,
+        description
+    })
+    await user.save();
+    res.json({
+        success: true,
+        message: "Image added Successfully"
+    });
+})
+
+exports.getImages = catchAsyncErrors(async (req,res,next) => {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+        return next(new CustomHttpError(404, "No user exists"));
+    }
+    res.json({
+        success:true,
+        images:user.images
+    })
+})
